@@ -407,6 +407,9 @@ function renderArrows() {
 }
 
 // Game loop
+var powerUpSpawnInterval = 5000; // Spawn a power-up every 5000 milliseconds (5 seconds)
+var lastPowerUpSpawnTime = Date.now();
+
 function gameLoop() {
     // Check if game is over
     if (gameOver) {
@@ -450,6 +453,12 @@ function gameLoop() {
     updateMonsters();
     updateArrows();
     updatePowerUps();
+
+    // Check if it's time to spawn a power-up
+    if (Date.now() - lastPowerUpSpawnTime > powerUpSpawnInterval) {
+        createPowerUp();
+        lastPowerUpSpawnTime = Date.now();
+    }
 
     // Check if all monsters have been defeated
     if (monsters.length === 0) {
