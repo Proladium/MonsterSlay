@@ -253,11 +253,11 @@ var gravity = 1;
 
 // Update player position based on keys
 function updatePlayer() {
-    if (keys.left) {
-        player.x -= 5;
+    if (keys.left && player.x > 0) {
+      player.x -= 5;
     }
-    if (keys.right) {
-        player.x += 5;
+    if (keys.right && player.x < canvas.width - 50) { // assuming the player's width is 50
+      player.x += 5;
     }
     if (keys.up && player.y === platform.y - 50) { // Only allow the player to jump if they're standing on the platform
         player.vy = -10;
@@ -311,14 +311,14 @@ function updatePlayer() {
 // Update monsters
 function updateMonsters() {
     for (var i = 0; i < monsters.length; i++) {
-        var monster = monsters[i];
-
-        // Move monster towards player
-        if (monster.x < player.x) {
-            monster.x += monster.speed;
-        } else if (monster.x > player.x) {
-                       monster.x -= monster.speed;
-        }
+      var monster = monsters[i];
+  
+      // Move monster towards player
+      if (monster.x < player.x && monster.x < canvas.width - 50) { // assuming the monster's width is 50
+        monster.x += monster.speed;
+      } else if (monster.x > player.x && monster.x > 0) {
+        monster.x -= monster.speed;
+      }
 
         // If the monster is flying, make it move up and down
         if (monster.type === 'flying') {
@@ -499,4 +499,3 @@ function gameLoop() {
 
 // Start the game loop
 gameLoop();
-
