@@ -82,7 +82,28 @@ var player = {
             }
         } else if (this.weapon.name === 'Bow') {
             // Create a new arrow object and add it to the arrows array
-            arrows.push({ x: this.x, y: this.y, vx: 5, damage: this.weapon.damage });
+            // Find the closest monster
+            var closestMonster = null;
+            var closestDistance = Infinity;
+            for (var i = 0; i < monsters.length; i++) {
+                var monster = monsters[i];
+                var dx = monster.x - this.x;
+                var dy = monster.y - this.y;
+                var distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < closestDistance) {
+                    closestMonster = monster;
+                    closestDistance = distance;
+                }
+            }
+            // If there is a closest monster, aim the arrow towards it
+            if (closestMonster !== null) {
+                var dx = closestMonster.x - this.x;
+                var dy = closestMonster.y - this.y;
+                var distance = Math.sqrt(dx * dx + dy * dy);
+                var vx = (dx / distance) * 5; // 5 is the speed of the arrow
+                var vy = (dy / distance) * 5;
+                arrows.push({ x: this.x, y: this.y, vx: vx, vy: vy, damage: this.weapon.damage });
+            }
         }
     },
     
@@ -97,7 +118,7 @@ var player = {
 // Define our platform
 var platform = {
     x: 0,
-    y: 300,
+    y: 400,
     width: canvas.width,
     height: 10
 };
@@ -120,8 +141,18 @@ var powerUpTypes = [
 // Function to create a new power-up
 function createPowerUp() {
     var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-    var x = Math.random() * canvas.width;
-    var y = Math.random() * canvas.height;
+
+    // Define the range within which power-ups can spawn vertically
+    var verticalSpawnRange = 10; // Adjust this value as needed
+
+    // Calculate the minimum and maximum y coordinates for power-up spawn
+    var minY = Math.max(player.y - verticalSpawnRange, 0);
+    var maxY = Math.min(player.y + verticalSpawnRange, canvas.height);
+
+    // Generate random x and y coordinates within the defined range
+    var x = Math.random() * canvas.width; // Power-ups can spawn anywhere horizontally
+    var y = Math.random() * (maxY - minY) + minY; // Power-ups spawn within the defined vertical range
+
     powerUps.push({ type: type, x: x, y: y });
 }
 
@@ -231,7 +262,7 @@ function renderPlayer() {
 
 // Platform functions
 function renderPlatform() {
-    ctx.fillStyle = '#0f0'; // Green
+    ctx.fillStyle = 'white'; // Green
     ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
 }
 
