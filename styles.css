@@ -1,0 +1,103 @@
+body {
+    background-image: url('Background.jpeg');
+    background-size: cover;
+    font-family: 'Press Start 2P', cursive;
+    animation-name: scroll;
+    animation-duration: 30s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes scroll {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: -1000px 0;
+    }
+}
+
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#gameCanvas {
+    flex-grow: 1;
+    margin: 0 20px;
+    border: 5px solid #333;
+    background: linear-gradient(to bottom, #000000 0%, #333333 100%);
+}
+
+.left-box, .right-box {
+    width: 200px;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    animation-name: float;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.left-box:hover, .right-box:hover {
+    transform: scale(1.1);
+}
+
+h2, p {
+   margin-top: 0;
+   margin-bottom: 10px;
+   transition: color 0.3s, transform 0.3s;
+}
+
+h2:hover, p:hover {
+   color:#ff0000; 
+}
+
+h2:hover {
+   transform: rotate(10deg);
+}
+
+p:hover {
+   transform: rotate(-10deg);
+}
+
+h2 {
+   color:#333; 
+   text-shadow:2px 2px 5px rgba(0,0,0,0.5); 
+}
+
+p {
+   color:#333; 
+}
+
+@media (max-width: 600px) {
+    .game-container {
+       flex-direction: column;
+    }
+ 
+    #gameCanvas {
+       width: calc(100vw - 40px);
+       height: calc(50vh - 40px);
+    }
+ 
+    .left-box, .right-box {
+       width: calc(100vw - 40px);
+    }
+ }
