@@ -87,6 +87,18 @@ p {
    color:#333; 
 }
 
+p2 {
+    color: green;
+}
+
+p3 {
+    color: red;
+}
+
+p4 {
+    color: blue;
+}
+
 @media (max-width: 600px) {
     .game-container {
        flex-direction: column;
@@ -101,3 +113,16 @@ p {
        width: calc(100vw - 40px);
     }
  }
+
+
+ .fade-in {
+    opacity:
+    0; animation-name:
+    fadeInOpacity; animation-duration:
+    2s; animation-fill-mode:
+    forwards;}
+    
+    @keyframes fadeInOpacity {
+    from {opacity:
+    0;} to {opacity:
+    1;}}
