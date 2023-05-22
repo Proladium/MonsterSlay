@@ -116,7 +116,10 @@ window.addEventListener('keydown', function(event) {
             keys.right = true;
             break;
         case 'ArrowUp':
-            keys.up = true;
+            if (player.y === platform.y - 50 || player.jumps < 2) {
+                player.vy = -10;
+                player.jumps++;
+            }
             break;
         case ' ':
             keys.space = true;
@@ -148,6 +151,8 @@ window.addEventListener('keyup', function(event) {
     }
 });
 
+
+
 // Define the weapons
 var weapons = [
     { name: 'Sword', type: 'melee', damage: 10, range: 50 },
@@ -161,6 +166,7 @@ var player = {
     vy: 0, // Vertical velocity
     health: 100,
     weapon: weapons[0], // Start with the first weapon
+    jump: 0,
     attack: function() {
         if (this.weapon.name === 'Sword') {
             // Check for collision with monsters
@@ -267,6 +273,7 @@ function updatePlayer() {
     if (player.y > platform.y - 50) {
         player.y = platform.y - 50;
         player.vy = 0;
+        player.jumps = 0; // Reset jumps
     }
 
     // Attack
@@ -492,3 +499,4 @@ function gameLoop() {
 
 // Start the game loop
 gameLoop();
+
