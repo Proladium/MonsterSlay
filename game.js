@@ -50,9 +50,20 @@ function updatePowerUps() {
 
 // Render power-ups
 function renderPowerUps() {
-    ctx.fillStyle = '#0ff'; // Cyan
     for (var i = 0; i < powerUps.length; i++) {
         var powerUp = powerUps[i];
+        // Set color based on power-up type
+        switch (powerUp.type.name) {
+            case 'Health Pack':
+                ctx.fillStyle = '#0f0'; // Green
+                break;
+            case 'Damage Booster':
+                ctx.fillStyle = '#f00'; // Red
+                break;
+            case 'Speed Booster':
+                ctx.fillStyle = '#00f'; // Blue
+                break;
+        }
         ctx.fillRect(powerUp.x, powerUp.y, 50, 50);
     }
 }
