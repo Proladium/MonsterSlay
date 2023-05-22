@@ -13,6 +13,50 @@ var healthFontSize = 20;
 // Define arrows
 var arrows = [];
 
+
+// Powerups
+var powerUps = [];
+
+// Define the types of power-ups
+var powerUpTypes = [
+    { name: 'Health Pack', effect: function(player) { player.health = Math.min(player.health + 50, 100); } },
+    { name: 'Damage Booster', effect: function(player) { player.weapon.damage *= 2; setTimeout(function() { player.weapon.damage /= 2; }, 10000); } },
+    { name: 'Speed Booster', effect: function(player) { player.speed *= 2; setTimeout(function() {player.speed /= 2; }, 10000); } }
+];
+
+// Function to create a new power-up
+function createPowerUp() {
+    var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+    var x = Math.random() * canvas.width;
+    var y = Math.random() * canvas.height;
+    powerUps.push({ type: type, x: x, y: y });
+}
+
+// Update power-ups
+function updatePowerUps() {
+    for (var i = 0; i < powerUps.length; i++) {
+        var powerUp = powerUps[i];
+        var dx = powerUp.x - player.x;
+        var dy = powerUp.y - player.y;
+        var distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 50) { // If the player and power-up are touching
+            powerUp.type.effect(player); // Apply the power-up's effect
+            powerUps.splice(i, 1); // Remove the power-up from the array
+            console.log('Power-up ' + powerUp.type.name + ' collected!');
+        }        
+    }
+}
+
+// Render power-ups
+function renderPowerUps() {
+    ctx.fillStyle = '#0ff'; // Cyan
+    for (var i = 0; i < powerUps.length; i++) {
+        var powerUp = powerUps[i];
+        ctx.fillRect(powerUp.x, powerUp.y, 50, 50);
+    }
+}
+
 // Player controls
 var keys = {
     left: false,
@@ -405,6 +449,7 @@ function gameLoop() {
     updatePlayer();
     updateMonsters();
     updateArrows();
+    updatePowerUps();
 
     // Check if all monsters have been defeated
     if (monsters.length === 0) {
@@ -419,6 +464,7 @@ function gameLoop() {
     renderPlatform();
     renderMonsters();
     renderArrows();
+    renderPowerUps();
 
     // Request next frame
     requestAnimationFrame(gameLoop);
