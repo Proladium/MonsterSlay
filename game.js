@@ -2,72 +2,16 @@
 var canvas = document.getElementById('gameCanvas');
 var ctx = canvas.getContext('2d');
 
+// Game state variables
 var gameOver = false;
-
 // Reference to health display element
 var healthDisplay = document.getElementById('health');
-
 // Variable to store font-size for the health text
 var healthFontSize = 20;
-
 // Define arrows
 var arrows = [];
-
-
-// Powerups
+// Define powerups
 var powerUps = [];
-
-// Define the types of power-ups
-var powerUpTypes = [
-    { name: 'Health Pack', effect: function(player) { player.health = Math.min(player.health + 50, 100); } },
-    { name: 'Damage Booster', effect: function(player) { player.weapon.damage *= 2; setTimeout(function() { player.weapon.damage /= 2; }, 10000); } },
-    { name: 'Speed Booster', effect: function(player) { player.speed *= 2; setTimeout(function() {player.speed /= 2; }, 10000); } }
-];
-
-// Function to create a new power-up
-function createPowerUp() {
-    var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-    var x = Math.random() * canvas.width;
-    var y = Math.random() * canvas.height;
-    powerUps.push({ type: type, x: x, y: y });
-}
-
-// Update power-ups
-function updatePowerUps() {
-    for (var i = 0; i < powerUps.length; i++) {
-        var powerUp = powerUps[i];
-        var dx = powerUp.x - player.x;
-        var dy = powerUp.y - player.y;
-        var distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < 50) { // If the player and power-up are touching
-            powerUp.type.effect(player); // Apply the power-up's effect
-            powerUps.splice(i, 1); // Remove the power-up from the array
-            console.log('Power-up ' + powerUp.type.name + ' collected!');
-        }        
-    }
-}
-
-// Render power-ups
-function renderPowerUps() {
-    for (var i = 0; i < powerUps.length; i++) {
-        var powerUp = powerUps[i];
-        // Set color based on power-up type
-        switch (powerUp.type.name) {
-            case 'Health Pack':
-                ctx.fillStyle = '#0f0'; // Green
-                break;
-            case 'Damage Booster':
-                ctx.fillStyle = '#f00'; // Red
-                break;
-            case 'Speed Booster':
-                ctx.fillStyle = '#00f'; // Blue
-                break;
-        }
-        ctx.fillRect(powerUp.x, powerUp.y, 50, 50);
-    }
-}
-
 // Player controls
 var keys = {
     left: false,
@@ -76,82 +20,33 @@ var keys = {
     space: false, // Attack key
     w: false // Switch weapon key
 };
-
 // Define the waves
 let waves = [
-  { numMonsters: 1, speed: 1 },
-  { numMonsters: 1, speed: 1 },
-  { numMonsters: 2, speed: 1.5 },
-  { numMonsters: 3, speed: 2 },
-  { numMonsters: 4, speed: 2.5 },
-  { numMonsters: 5, speed: 3 },
-  { numMonsters: 6, speed: 3.5 },
-  { numMonsters: 7, speed: 4 },
-  { numMonsters: 8, speed: 4.5 },
-  { numMonsters: 9, speed: 5 },
-  { numMonsters: 10, speed: 5.5 },
-  { numMonsters: 11, speed: 6 },
-  { numMonsters: 12, speed: 6.5 },
-  { numMonsters: 13, speed: 7 },
-  { numMonsters: 14, speed: 7.5 },
-  { numMonsters: 15, speed: 8 },
-  { numMonsters: 16, speed: 8.5 },
-  { numMonsters: 17, speed: 9 },
-  { numMonsters: 18, speed: 9.5 },
-  { numMonsters: 19, speed: 10 },
-  { numMonsters: 20, speed: 13 },
-  // ...add more waves as needed...
-];
-
-let currentWave = 0;
-let monstersDefeated = 0;
-
-// Listen for keydown events
-window.addEventListener('keydown', function(event) {
-    switch (event.key) {
-        case 'ArrowLeft':
-            keys.left = true;
-            break;
-        case 'ArrowRight':
-            keys.right = true;
-            break;
-        case 'ArrowUp':
-            if (player.y === platform.y - 50 || player.jumps < 2) {
-                player.vy = -10;
-                player.jumps++;
-            }
-            break;
-        case ' ':
-            keys.space = true;
-            break;
-        case 'w':
-            keys.w = true;
-            break;
-    }
-});
-
-// Listen for keyup events
-window.addEventListener('keyup', function(event) {
-    switch (event.key) {
-        case 'ArrowLeft':
-            keys.left = false;
-            break;
-        case 'ArrowRight':
-            keys.right = false;
-            break;
-        case 'ArrowUp':
-            keys.up = false;
-            break;
-        case ' ':
-            keys.space = false;
-            break;
-        case 'w':
-            keys.w = false;
-            break;
-    }
-});
-
-
+    { numMonsters: 1, speed: 1 },
+    { numMonsters: 1, speed: 1 },
+    { numMonsters: 2, speed: 1.5 },
+    { numMonsters: 3, speed: 2 },
+    { numMonsters: 4, speed: 2.5 },
+    { numMonsters: 5, speed: 3 },
+    { numMonsters: 6, speed: 3.5 },
+    { numMonsters: 7, speed: 4 },
+    { numMonsters: 8, speed: 4.5 },
+    { numMonsters: 9, speed: 5 },
+    { numMonsters: 10, speed: 5.5 },
+    { numMonsters: 11, speed: 6 },
+    { numMonsters: 12, speed: 6.5 },
+    { numMonsters: 13, speed: 7 },
+    { numMonsters: 14, speed: 7.5 },
+    { numMonsters: 15, speed: 8 },
+    { numMonsters: 16, speed: 8.5 },
+    { numMonsters: 17, speed: 9 },
+    { numMonsters: 18, speed: 9.5 },
+    { numMonsters: 19, speed: 10 },
+    { numMonsters: 20, speed: 13 },
+    // ...add more waves as needed...
+  ];
+  let currentWave = 0;
+  let monstersDefeated = 0;
 
 // Define the weapons
 var weapons = [
@@ -210,48 +105,65 @@ var platform = {
 // Define our monsters
 var monsters = [];
 
-// Function to create a new monster
-function createMonster(type, x, y, health, damage, speed, vy) {
-    return { x: x, y: y, health: health, damage: damage, speed: speed, type: type, vy: vy };
+// Gravity constant
+var gravity = 1;
+
+
+// Power-up types and functions
+// Define the types of power-ups
+var powerUpTypes = [
+    { name: 'Health Pack', effect: function(player) { player.health = Math.min(player.health + 50, 100); } },
+    { name: 'Damage Booster', effect: function(player) { player.weapon.damage *= 2; setTimeout(function() { player.weapon.damage /= 2; }, 10000); } },
+    { name: 'Speed Booster', effect: function(player) { player.speed *= 2; setTimeout(function() {player.speed /= 2; }, 10000); } }
+];
+
+// Function to create a new power-up
+function createPowerUp() {
+    var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+    var x = Math.random() * canvas.width;
+    var y = Math.random() * canvas.height;
+    powerUps.push({ type: type, x: x, y: y });
 }
 
-// Function to create monster
-function createMonsters() {
-    monsters = [];
-  
-    var wave = waves[Math.min(currentWave, waves.length - 1)];
-  
-    for (var i = 0; i < wave.numMonsters; i++) {
-      var monsterHealth = 50 + currentWave * 10;
-      var monsterSpeed = wave.speed;
-      var monsterType = i % 2 === 0 ? 'walking' : 'flying'; // Alternate between walking and flying
-      monsters.push(createMonster(monsterType, canvas.width + i * 50, platform.y - 50, monsterHealth, 1, monsterSpeed, 0));
+// Update power-ups
+function updatePowerUps() {
+    for (var i = 0; i < powerUps.length; i++) {
+        var powerUp = powerUps[i];
+        var dx = powerUp.x - player.x;
+        var dy = powerUp.y - player.y;
+        var distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 50) { // If the player and power-up are touching
+            powerUp.type.effect(player); // Apply the power-up's effect
+            powerUps.splice(i, 1); // Remove the power-up from the array
+            console.log('Power-up ' + powerUp.type.name + ' collected!');
+        }        
+    }
+}
+
+// Render power-ups
+function renderPowerUps() {
+    for (var i = 0; i < powerUps.length; i++) {
+        var powerUp = powerUps[i];
+        // Set color based on power-up type
+        switch (powerUp.type.name) {
+            case 'Health Pack':
+                ctx.fillStyle = '#0f0'; // Green
+                break;
+            case 'Damage Booster':
+                ctx.fillStyle = '#f00'; // Red
+                break;
+            case 'Speed Booster':
+                ctx.fillStyle = '#00f'; // Blue
+                break;
+        }
+        ctx.fillRect(powerUp.x, powerUp.y, 50, 50);
     }
 }
 
 
-
-function drawHealthBar(entity, maxHealth, currentHealth, x, y, width, height) {
-    // Calculate the percentage of health remaining
-    var healthPercent = currentHealth / maxHealth;
-
-    // Draw the background of the health bar (the part that represents the maximum health)
-    ctx.fillStyle = '#000'; // Black
-    ctx.fillRect(x, y, width, height);
-
-    // Draw the filled part of the health bar (the part that represents the current health)
-    ctx.fillStyle = '#f00'; // Red
-    ctx.fillRect(x, y, width * healthPercent, height);
-
-    // Draw the outline of the health bar
-    ctx.strokeStyle = '#fff'; // White
-    ctx.strokeRect(x, y, width, height);
-}
-
-// Gravity constant
-var gravity = 1;
-
-// Update player position based on keys
+// Player functions
+// Define our player
 function updatePlayer() {
     if (keys.left && player.x > 0) {
       player.x -= 5;
@@ -307,6 +219,42 @@ function updatePlayer() {
     }
 }
 
+// Render player
+function renderPlayer() {
+    ctx.fillStyle = '#00f'; // Blue
+    ctx.fillRect(player.x, player.y, 50, 50);
+
+    // Draw the player's health bar above the player
+    drawHealthBar(player, 100, player.health, player.x, player.y - 10, 50, 5);
+}
+
+
+// Platform functions
+function renderPlatform() {
+    ctx.fillStyle = '#0f0'; // Green
+    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+}
+
+
+// Monster functions
+// Function to create a new monster
+function createMonster(type, x, y, health, damage, speed, vy) {
+    return { x: x, y: y, health: health, damage: damage, speed: speed, type: type, vy: vy };
+}
+
+// Function to create monster
+function createMonsters() {
+    monsters = [];
+  
+    var wave = waves[Math.min(currentWave, waves.length - 1)];
+  
+    for (var i = 0; i < wave.numMonsters; i++) {
+      var monsterHealth = 50 + currentWave * 10;
+      var monsterSpeed = wave.speed;
+      var monsterType = i % 2 === 0 ? 'walking' : 'flying'; // Alternate between walking and flying
+      monsters.push(createMonster(monsterType, canvas.width + i * 50, platform.y - 50, monsterHealth, 1, monsterSpeed, 0));
+    }
+}
 
 // Update monsters
 function updateMonsters() {
@@ -350,6 +298,21 @@ function updateMonsters() {
     }
 }
 
+// Render monsters
+function renderMonsters() {
+    ctx.fillStyle = '#f00'; // Red
+    for (var i = 0; i < monsters.length; i++) {
+        var monster = monsters[i];
+        ctx.fillRect(monster.x, monster.y, 50, 50);
+
+        // Draw the monster's health bar above the monster
+        var monsterMaxHealth = 50 + currentWave * 10; // This is how you've defined monster health in your createMonsters function
+        drawHealthBar(monster, monsterMaxHealth, monster.health, monster.x, monster.y - 10, 50, 5);
+    }
+}
+
+
+// Arrow functions
 // Update arrows
 function updateArrows() {
     for (var i = 0; i < arrows.length; i++) {
@@ -382,34 +345,6 @@ function updateArrows() {
     }
 }
 
-// Render player
-function renderPlayer() {
-    ctx.fillStyle = '#00f'; // Blue
-    ctx.fillRect(player.x, player.y, 50, 50);
-
-    // Draw the player's health bar above the player
-    drawHealthBar(player, 100, player.health, player.x, player.y - 10, 50, 5);
-}
-
-// Render platform
-function renderPlatform() {
-    ctx.fillStyle = '#0f0'; // Green
-    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-}
-
-// Render monsters
-function renderMonsters() {
-    ctx.fillStyle = '#f00'; // Red
-    for (var i = 0; i < monsters.length; i++) {
-        var monster = monsters[i];
-        ctx.fillRect(monster.x, monster.y, 50, 50);
-
-        // Draw the monster's health bar above the monster
-        var monsterMaxHealth = 50 + currentWave * 10; // This is how you've defined monster health in your createMonsters function
-        drawHealthBar(monster, monsterMaxHealth, monster.health, monster.x, monster.y - 10, 50, 5);
-    }
-}
-
 // Render arrows
 function renderArrows() {
     ctx.fillStyle = '#ff0'; // Yellow
@@ -423,6 +358,74 @@ function renderArrows() {
         }
     }
 }
+
+
+// Health bar function
+function drawHealthBar(entity, maxHealth, currentHealth, x, y, width, height) {
+    // Calculate the percentage of health remaining
+    var healthPercent = currentHealth / maxHealth;
+
+    // Draw the background of the health bar (the part that represents the maximum health)
+    ctx.fillStyle = '#000'; // Black
+    ctx.fillRect(x, y, width, height);
+
+    // Draw the filled part of the health bar (the part that represents the current health)
+    ctx.fillStyle = '#f00'; // Red
+    ctx.fillRect(x, y, width * healthPercent, height);
+
+    // Draw the outline of the health bar
+    ctx.strokeStyle = '#fff'; // White
+    ctx.strokeRect(x, y, width, height);
+}
+
+
+// Key event listeners
+// Listen for keydown events
+window.addEventListener('keydown', function(event) {
+    switch (event.key) {
+        case 'ArrowLeft':
+            keys.left = true;
+            break;
+        case 'ArrowRight':
+            keys.right = true;
+            break;
+        case 'ArrowUp':
+            if (player.y === platform.y - 50 || player.jumps < 2) {
+                player.vy = -10;
+                player.jumps++;
+            }
+            break;
+        case ' ':
+            keys.space = true;
+            break;
+        case 'w':
+            keys.w = true;
+            break;
+    }
+});
+
+// Listen for keyup events
+window.addEventListener('keyup', function(event) {
+    switch (event.key) {
+        case 'ArrowLeft':
+            keys.left = false;
+            break;
+        case 'ArrowRight':
+            keys.right = false;
+            break;
+        case 'ArrowUp':
+            keys.up = false;
+            break;
+        case ' ':
+            keys.space = false;
+            break;
+        case 'w':
+            keys.w = false;
+            break;
+    }
+});
+
+
 
 // Game loop
 var powerUpSpawnInterval = 5000; // Spawn a power-up every 5000 milliseconds (5 seconds)
@@ -499,3 +502,4 @@ function gameLoop() {
 
 // Start the game loop
 gameLoop();
+
