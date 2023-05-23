@@ -24,70 +24,72 @@ var keys = {
 let waves = [
     { numMonsters: 1, speed: 1 },
     // Level 1
-    { numMonsters: 1, speed: 1 },
+    { numMonsters: 3, speed: 1 },
     // Level 2
-    { numMonsters: 2, speed: 1.5 },
+    { numMonsters: 3, speed: 1.5 },
     // Level 3
     { numMonsters: 1, speed: 4 },
     // Level 4
-    { numMonsters: 3, speed: 2.5 },
+    { numMonsters: 4, speed: 2.5 },
     // Level 5
-    { numMonsters: 1, speed: 6 },
+    { numMonsters: 5, speed: 6 },
     // Level 6
-    { numMonsters: 6, speed: 1 },
+    { numMonsters: 5, speed: 2.5 },
     // level 7
-    { numMonsters: 4, speed: 3.7 },
+    { numMonsters: 6, speed: 3.7 },
     // level 8
-    { numMonsters: 5, speed: 3.9 },
+    { numMonsters: 6, speed: 3.9 },
     // level 9
-    { numMonsters: 6, speed: 4.1 },
+    { numMonsters: 7, speed: 4.1 },
     // level 10
-    { numMonsters: 20, speed: 1 },
+    { numMonsters: 7, speed: 1.5 },
     // level 11
-    { numMonsters: 3, speed: 10 },
+    { numMonsters: 8, speed: 9 },
     // level 12
-    { numMonsters: 1, speed: 6.5 },
+    { numMonsters: 8, speed: 6.5 },
     // level 13
-    { numMonsters: 13, speed: 7 },
+    { numMonsters: 9, speed: 7 },
     // level 14
-    { numMonsters: 14, speed: 7.5 },
+    { numMonsters: 9, speed: 7.5 },
     // level 15
-    { numMonsters: 15, speed: 8 },
+    { numMonsters: 10, speed: 8 },
     // level 16
-    { numMonsters: 40, speed: 1 },
+    { numMonsters: 20, speed: 4 },
     // level 17
-    { numMonsters: 17, speed: 9 },
+    { numMonsters: 13, speed: 9 },
     // Level 18
-    { numMonsters: 18, speed: 9.5 },
+    { numMonsters: 14, speed: 9.5 },
     // Level 19
-    { numMonsters: 19, speed: 10 },
+    { numMonsters: 15, speed: 10 },
     // level 20
     { numMonsters: 20, speed: 13 },
     // ...add more waves as needed...
   ];
-  let currentWave = 0;
-  let monstersDefeated = 0;
+  
+  // Define the current wave
+  let currentWave = 0; // Start at wave 0
+  let monstersDefeated = 0; // Keep track of how many monsters have been defeated
 
 // Define the weapons
 var weapons = [
-    { name: 'Sword', type: 'melee', damage: 10, range: 50 },
+    { name: 'Sword', type: 'melee', damage: 100, range: 50 },
     { name: 'Bow', type: 'ranged', damage: 5, range: 100 }
 ];
 
 // Define our player
 var player = {
     x: 0,
-    y: 0,
+    y: 0, 
     width: 50, // Set the width of the player
     height: 50, // Set the height of the player
     vy: 0, // Vertical velocity
-    health: 100,
+    health: 100, // Set the player's health
     damageCooldown: 2000, // 2 seconds cooldown
     lastDamageTime: 0, // Timestamp of the last time the player was damaged
     weapon: weapons[0], // Start with the first weapon
     jump: 0,
     swordCooldown: false, // Flag to track whether player is in sword cooldown period
-    swordCooldownDuration: 50, // Duration of the sword attack cooldown in milliseconds
+    swordCooldownDuration: 300, // Duration of the sword attack cooldown in milliseconds
     bowCooldown: false, // Flag to track whether player is in bow cooldown period
     bowCooldownDuration: 100, // Duration of the bow attack cooldown in milliseconds
     lastSwordAttackTime: 0, // Timestamp of the last sword attack
@@ -303,13 +305,13 @@ function renderPowerUps() {
 // Define our player
 function updatePlayer() {
     if (keys.left && player.x > 0) {
-      player.x -= 10; // Adjust this value to alter the player speed
+      player.x -= 15; // Adjust this value to alter the player speed
     }
     if (keys.right && player.x < canvas.width - 50) { // assuming the player's width is 50
       player.x += 10;
     }
     if (keys.up && player.y === platform.y - 50) { // Only allow the player to jump if they're standing on the platform
-        player.vy = -10;
+        player.vy = -10; 
     }
 
     // Apply gravity
@@ -402,7 +404,7 @@ function createMonsters() {
     var wave = waves[Math.min(currentWave, waves.length - 1)]; // Get the current wave
   
     for (var i = 0; i < wave.numMonsters; i++) { // Use 'i' instead of 'monsters.length' here
-      var monsterHealth = 50 + currentWave * 10; // Increase monster health with each wave
+      var monsterHealth = 10 + currentWave * 10; // Increase monster health with each wave
       var monsterSpeed = wave.speed; // Set the monster speed based on the current wave
       var monsterType = i % 2 === 0 ? 'walking' : 'flying'; // Alternate between walking and flying
       monsters.push(createMonster(monsterType, canvas.width + i * 50, platform.y - 50, monsterHealth, monsterSpeed, 0)); // Adjust the x coordinate as needed
@@ -434,7 +436,7 @@ function updateMonsters() {
 
         // If the monster is walking and the player is above it, make it jump
         if (monster.type === 'walking' && player.y < monster.y) {
-            monster.vy = -20; // This value may need to be adjusted
+            monster.vy = -5; // This value may need to be adjusted
         }
 
         // Apply gravity to the monster
@@ -546,7 +548,7 @@ window.addEventListener('keydown', function(event) {
             break;
         case 'ArrowUp':
             if (player.y === platform.y - 50 || player.jumps < 2) {
-                player.vy = -14;
+                player.vy = -19;
                 player.jumps++;
             }
             break;
