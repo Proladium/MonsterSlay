@@ -171,6 +171,7 @@ var player = {
     
     // New player methods
     takeDamage: function(damage) {
+        console.log('Damage parameter recieved: ', damage); // Log the damage parameter
         console.log('Damage recieved: ' + damage);
         this.health -= damage; // Use the passed damage value
         console.log('Player takes damage');
@@ -224,6 +225,7 @@ function checkCollision(player, monster) {
     );
 
     if (collisionDetected) {
+        console.log('Collision detected with monster: ', monster); // Log the monster involved in the collision
         console.log('Collision detected');
         player.takeDamage();
     } else {
@@ -623,13 +625,6 @@ function gameLoop() {
 
     // Loop through each monster
     for (let i = 0; i < monsters.length; i++) {
-        let monster = monsters[i];
-
-        // Check for collision with player
-        if (checkCollision(player, monster)) {
-            // Collision detected, call the takeDamage method of the player
-            player.takeDamage();
-        }
     }
 
 
