@@ -23,25 +23,45 @@ var keys = {
 // Define the waves
 let waves = [
     { numMonsters: 1, speed: 1 },
+    // Level 1
     { numMonsters: 1, speed: 1 },
+    // Level 2
     { numMonsters: 2, speed: 1.5 },
+    // Level 3
     { numMonsters: 3, speed: 2 },
+    // Level 4
     { numMonsters: 4, speed: 2.5 },
-    { numMonsters: 5, speed: 3 },
-    { numMonsters: 6, speed: 3.5 },
-    { numMonsters: 7, speed: 4 },
-    { numMonsters: 8, speed: 4.5 },
-    { numMonsters: 9, speed: 5 },
-    { numMonsters: 10, speed: 5.5 },
-    { numMonsters: 11, speed: 6 },
-    { numMonsters: 12, speed: 6.5 },
+    // Level 5
+    { numMonsters: 1, speed: 6 },
+    // Level 6
+    { numMonsters: 6, speed: 1 },
+    // level 7
+    { numMonsters: 7, speed: 3.7 },
+    // level 8
+    { numMonsters: 8, speed: 3.9 },
+    // level 9
+    { numMonsters: 9, speed: 4.1 },
+    // level 10
+    { numMonsters: 20, speed: 1 },
+    // level 11
+    { numMonsters: 3, speed: 10 },
+    // level 12
+    { numMonsters: 1, speed: 6.5 },
+    // level 13
     { numMonsters: 13, speed: 7 },
+    // level 14
     { numMonsters: 14, speed: 7.5 },
+    // level 15
     { numMonsters: 15, speed: 8 },
-    { numMonsters: 16, speed: 8.5 },
+    // level 16
+    { numMonsters: 40, speed: 1 },
+    // level 17
     { numMonsters: 17, speed: 9 },
+    // Level 18
     { numMonsters: 18, speed: 9.5 },
+    // Level 19
     { numMonsters: 19, speed: 10 },
+    // level 20
     { numMonsters: 20, speed: 13 },
     // ...add more waves as needed...
   ];
@@ -62,15 +82,32 @@ var player = {
     health: 100,
     weapon: weapons[0], // Start with the first weapon
     jump: 0,
+    swordCooldown: false, // Flag to track whether player is in sword cooldown period
+    swordCooldownDuration: 50, // Duration of the sword attack cooldown in milliseconds
+    bowCooldown: false, // Flag to track whether player is in bow cooldown period
+    bowCooldownDuration: 100, // Duration of the bow attack cooldown in milliseconds
+    lastSwordAttackTime: 0, // Timestamp of the last sword attack
+    lastBowAttackTime: 0, // Timestamp of the last bow attack
+
+    lasHitTime: 0, // Timestamp of the last time the player was hit
+    hitCooldownDuration: 100, // Duration of the invulnerability period after being hit, in milliseconds
+
     attack: function() {
+        // Check if the player is in cooldown period based on the weapon type
+        if (this.weapon.name === 'Sword' && this.swordCooldown) {
+            return; // Abort attack if in sword cooldown
+        } else if (this.weapon.name === 'Bow' && this.bowCooldown) {
+            return; // Abort attack if in bow cooldown
+        }
+
         if (this.weapon.name === 'Sword') {
             // Check for collision with monsters
             for (var i = 0; i < monsters.length; i++) {
                 var monster = monsters[i];
-                var dx = monster.x - player.x;
-                var dy = monster.y - player.y;
+                var dx = monster.x - this.x;
+                var dy = monster.y - this.y;
                 var distance = Math.sqrt(dx * dx + dy * dy);
-                
+
                 if (distance < this.weapon.range) { // If the player and monster are within sword range
                     monster.health -= this.weapon.damage;
                     if (monster.health <= 0) {
@@ -78,8 +115,17 @@ var player = {
                         console.log('Monster ' + i + ' died!');
                         monstersDefeated++;
                     }
-                }        
+                }
             }
+
+            // Update the sword attack cooldown variables
+            this.swordCooldown = true;
+            this.lastSwordAttackTime = Date.now();
+
+            // Start a timer to reset the sword attack cooldown
+            setTimeout(() => {
+                this.swordCooldown = false;
+            }, this.swordCooldownDuration);
         } else if (this.weapon.name === 'Bow') {
             // Create a new arrow object and add it to the arrows array
             // Find the closest monster
@@ -104,9 +150,18 @@ var player = {
                 var vy = (dy / distance) * 5;
                 arrows.push({ x: this.x, y: this.y, vx: vx, vy: vy, damage: this.weapon.damage });
             }
+
+            // Update the bow attack cooldown variables
+            this.bowCooldown = true;
+            this.lastBowAttackTime = Date.now();
+
+            // Start a timer to reset the bow attack cooldown
+            setTimeout(() => {
+                this.bowCooldown = false;
+            }, this.bowCooldownDuration);
         }
     },
-    
+
     switchWeapon: function() {
         var currentWeaponIndex = weapons.indexOf(this.weapon);
         var nextWeaponIndex = (currentWeaponIndex + 1) % weapons.length;
@@ -114,6 +169,8 @@ var player = {
         document.getElementById('weapon').textContent = "Current Weapon: " + this.weapon.name;
     }
 };
+
+
 
 // Define our platform
 var platform = {
@@ -197,10 +254,10 @@ function renderPowerUps() {
 // Define our player
 function updatePlayer() {
     if (keys.left && player.x > 0) {
-      player.x -= 5;
+      player.x -= 10; // Adjust this value to alter the player speed
     }
     if (keys.right && player.x < canvas.width - 50) { // assuming the player's width is 50
-      player.x += 5;
+      player.x += 10;
     }
     if (keys.up && player.y === platform.y - 50) { // Only allow the player to jump if they're standing on the platform
         player.vy = -10;
@@ -235,18 +292,22 @@ function updatePlayer() {
         var dx = monster.x - player.x;
         var dy = monster.y - player.y;
         var distance = Math.sqrt(dx * dx + dy * dy);
-        
+
         if (distance < 50) { // If the player and monster are touching
-            player.health -= monster.damage;
-            healthDisplay.textContent = "Health: " + player.health; // Update health display
-            if (player.health <= 0) {
-                player.health = 0; // Ensure doesn't go below 0
-                gameOver = true;
-                // Game over
-                console.log("Game Over");
-                return;
+            var currentTime = Date.now();
+            if (currentTime - player.lastHitTime > player.hitCooldownDuration) { // If the player is not in the invulnerability period
+                player.health -= monster.damage; // Reduce the player's health by the monster's damage
+                player.lastHitTime = currentTime; // Update the last hit time
+                healthDisplay.textContent = "Health: " + player.health; // Update health display
+                if (player.health <= 0) {
+                    player.health = 0; // Ensure doesn't go below 0
+                    gameOver = true;
+                    // Game over
+                    console.log("Game Over");
+                    return;
+                }
             }
-        }        
+        }                
     }
 }
 
@@ -269,7 +330,8 @@ function renderPlatform() {
 
 // Monster functions
 // Function to create a new monster
-function createMonster(type, x, y, health, damage, speed, vy) {
+function createMonster(type, x, y, health, speed, vy) {
+    var damage = 10; // Set the damage each monster can inflict
     return { x: x, y: y, health: health, damage: damage, speed: speed, type: type, vy: vy };
 }
 
@@ -350,31 +412,27 @@ function updateArrows() {
         var arrow = arrows[i];
         arrow.x += arrow.vx;
         // Check for collision with monsters
-        for (var j = 0; j < monsters.length; j++) {
+        for (var j = 0; j < monsters.length; j++) { // Use 'j' instead of 'i' here
             var monster = monsters[j];
-            // Check if the arrow's x and y coordinates are within the monster's bounding box
-            if (arrow.x >= monster.x && arrow.x <= monster.x + 50 &&
-                arrow.y >= monster.y && arrow.y <= monster.y + 50) {
-                // If a collision is detected, reduce the monster's health by the arrow's damage value
-                monster.health -= arrow.damage;
-                // Log the collision and the monster's health
-                console.log('Collision detected! Monster ' + j + ' health: ' + monster.health);
-                // Remove the arrow from the array
-                arrows.splice(i, 1);
-                // Check if the monster's health is zero or below
+            var dx = monster.x - arrow.x;
+            var dy = monster.y - arrow.y;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 50) { // If the arrow and monster are touching
+                monster.health -= arrow.damage; // Reduce the monster's health by the arrow's damage
                 if (monster.health <= 0) {
-                    // Remove the monster from the array
-                    monsters.splice(j, 1);
-                    // Log the monster's death
+                    monsters.splice(j, 1); // Remove the monster from the array
                     console.log('Monster ' + j + ' died!');
                     monstersDefeated++;
                 }
-                // Break out of the inner loop
-                break;
-            }
+                arrows.splice(i, 1); // Remove the arrow from the array
+                break; // Exit the loop early since the arrow has been removed
+            }                
         }
     }
 }
+
+
 
 // Render arrows
 function renderArrows() {
@@ -533,4 +591,3 @@ function gameLoop() {
 
 // Start the game loop
 gameLoop();
-
