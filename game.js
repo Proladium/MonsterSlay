@@ -78,8 +78,12 @@ var weapons = [
 var player = {
     x: 0,
     y: 0,
+    width: 50, // Set the width of the player
+    height: 50, // Set the height of the player
     vy: 0, // Vertical velocity
     health: 100,
+    damageCooldown: 2000, // 2 seconds cooldown
+    lastDamageTime: 0, // Timestamp of the last time the player was damaged
     weapon: weapons[0], // Start with the first weapon
     jump: 0,
     swordCooldown: false, // Flag to track whether player is in sword cooldown period
@@ -169,20 +173,22 @@ var player = {
         document.getElementById('weapon').textContent = "Current Weapon: " + this.weapon.name;
     },
     
-    // New player methods
     takeDamage: function(damage) {
-        console.log('Damage parameter recieved: ', damage); // Log the damage parameter
-        console.log('Damage recieved: ' + damage);
-        this.health -= damage; // Use the passed damage value
-        console.log('Player takes damage');
-        console.log('Player health: ' + this.health);
-        healthDisplay.textContent = "Health: " + this.health;
-        if (this.health <= 0) {
-            this.health = 0; // Ensure health doesn't go below 0
-            console.log('Player has died!');
-            gameOver = true; // Set gameOver to true
+        var currentTime = new Date().getTime();
+        if (currentTime - this.lastDamageTime > this.damageCooldown) {
+            console.log('Damage recieved: ' + damage);
+            this.health -= damage;
+            console.log('Player takes damage');
+            console.log('Player health: ' + this.health);
+            if (this.health <= 0) {
+                this.health = 0;
+                console.log('Player has died!');
+                gameOver = true;
+            }
+            this.lastDamageTime = currentTime;
         }
-    },    
+    },
+
     die: function() {
         // Code to handle player death
         // For now, let's just log a message
@@ -225,12 +231,10 @@ function checkCollision(player, monster) {
         player.y + player.height > monster.y
     );
 
-    console.log('Checking collision: ' + collisionDetected);
-
     if (collisionDetected) {
         console.log('Collision detected with monster: ', monster); // Log the monster involved in the collision
         console.log('Collision detected');
-        player.takeDamage(monster.damage);
+        player.takeDamage(monster.damage); // Pass the monster's damage value to the takeDamage function
     } else {
         console.log('No collision detected');
         console.log('Player position: (' + player.x + ', ' + player.y + ')');
@@ -239,6 +243,7 @@ function checkCollision(player, monster) {
 
     return collisionDetected;
 }
+
 
 
 // Function to create a new power-up
@@ -377,10 +382,18 @@ function renderPlatform() {
 // Monster functions
 // Function to create a new monster
 function createMonster(type, x, y, health, speed, vy) {
-    var damage = 10; // Set the damage each monster can inflict
-    var monster = { x: x, y: y, health: health, damage: damage, speed: speed, type: type, vy: vy };
-    console.log('Created monster: ', monster); // Log the created monster
-    return monster;
+    var damage = 30; // Set the damage each monster can inflict
+    return {
+        x: x,
+        y: y,
+        width: 50, // Set the width of the monster
+        height: 50, // Set the height of the monster
+        health: health,
+        damage: damage,
+        speed: speed,
+        type: type,
+        vy: vy
+    };
 }
 
 // Function to create monster
