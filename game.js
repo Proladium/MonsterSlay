@@ -195,6 +195,16 @@ var powerUpTypes = [
     { name: 'Speed Booster', effect: function(player) { player.speed *= 2; setTimeout(function() {player.speed /= 2; }, 10000); } }
 ];
 
+// Function to check for collision detection
+function checkCollision(player, monster) {
+    return (
+        player.x < monster.x + monster.width &&
+        player.x + player.width > monster.x &&
+        player.y < monster.y + monster.height &&
+        player.y + player.height > monster.y
+    );
+}
+
 // Function to create a new power-up
 function createPowerUp() {
     var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
@@ -564,6 +574,25 @@ function gameLoop() {
     updateArrows();
     updatePowerUps();
 
+
+
+    // Loop through each monster
+    for (let i = 0; i < monsters.length; i++) {
+        let monster = monsters[i];
+
+        // Check for collision with player
+        if (checkCollision(player, monster)) {
+            // Collision detected, reduce player's health
+            player.health -= 10;
+            if (player.health < 0) {
+                player.health = 0;
+            }
+            // Update health display
+            healthDisplay.textContent = "Health: " + player.health;
+        }
+    }
+
+
     // Check if it's time to spawn a power-up
     if (Date.now() - lastPowerUpSpawnTime > powerUpSpawnInterval) {
         createPowerUp();
@@ -591,3 +620,4 @@ function gameLoop() {
 
 // Start the game loop
 gameLoop();
+
