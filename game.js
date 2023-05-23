@@ -24,23 +24,23 @@ var keys = {
 let waves = [
     { numMonsters: 1, speed: 1 },
     // Level 1
-    { numMonsters: 2, speed: 1 },
+    { numMonsters: 1, speed: 1 },
     // Level 2
     { numMonsters: 2, speed: 1.5 },
     // Level 3
-    { numMonsters: 3, speed: 2 },
+    { numMonsters: 1, speed: 4 },
     // Level 4
-    { numMonsters: 4, speed: 2.5 },
+    { numMonsters: 3, speed: 2.5 },
     // Level 5
     { numMonsters: 1, speed: 6 },
     // Level 6
     { numMonsters: 6, speed: 1 },
     // level 7
-    { numMonsters: 7, speed: 3.7 },
+    { numMonsters: 4, speed: 3.7 },
     // level 8
-    { numMonsters: 8, speed: 3.9 },
+    { numMonsters: 5, speed: 3.9 },
     // level 9
-    { numMonsters: 9, speed: 4.1 },
+    { numMonsters: 6, speed: 4.1 },
     // level 10
     { numMonsters: 20, speed: 1 },
     // level 11
@@ -244,8 +244,6 @@ function checkCollision(player, monster) {
     return collisionDetected;
 }
 
-
-
 // Function to create a new power-up
 function createPowerUp() {
     var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
@@ -290,7 +288,7 @@ function renderPowerUps() {
                 ctx.fillStyle = '#0f0'; // Green
                 break;
             case 'Damage Booster':
-                ctx.fillStyle = '#f00'; // Red
+                ctx.fillStyle = '#CD5C5C'; // Red
                 break;
             case 'Speed Booster':
                 ctx.fillStyle = '#00f'; // Blue
@@ -407,7 +405,7 @@ function createMonsters() {
       var monsterHealth = 50 + currentWave * 10; // Increase monster health with each wave
       var monsterSpeed = wave.speed; // Set the monster speed based on the current wave
       var monsterType = i % 2 === 0 ? 'walking' : 'flying'; // Alternate between walking and flying
-      monsters.push(createMonster(monsterType, canvas.width + i * 50, platform.y - 50, monsterHealth, 1, monsterSpeed, 0));
+      monsters.push(createMonster(monsterType, canvas.width + i * 50, platform.y - 50, monsterHealth, monsterSpeed, 0)); // Adjust the x coordinate as needed
     }
 }
 
@@ -436,7 +434,7 @@ function updateMonsters() {
 
         // If the monster is walking and the player is above it, make it jump
         if (monster.type === 'walking' && player.y < monster.y) {
-            monster.vy = -10; // This value may need to be adjusted
+            monster.vy = -20; // This value may need to be adjusted
         }
 
         // Apply gravity to the monster
@@ -468,7 +466,7 @@ function renderMonsters() {
 
         // Draw the monster's health bar above the monster
         var monsterMaxHealth = 50 + currentWave * 10; // This is how you've defined monster health in your createMonsters function
-        drawHealthBar(monster, monsterMaxHealth, monster.health, monster.x, monster.y - 10, 50, 5);
+        drawHealthBar(monster, monsterMaxHealth, monster.health, monster.x, monster.y - 10, 50, 5); // Adjust the y coordinate as needed
     }
 }
 
@@ -476,7 +474,7 @@ function renderMonsters() {
 // Arrow functions
 // Update arrows
 function updateArrows() {
-    for (var i = 0; i < arrows.length; i++) {
+    for (var i = 0; i < arrows.length; i++) { // Use 'i' instead of 'arrows.length' here
         var arrow = arrows[i];
         arrow.x += arrow.vx;
         // Check for collision with monsters
@@ -548,7 +546,7 @@ window.addEventListener('keydown', function(event) {
             break;
         case 'ArrowUp':
             if (player.y === platform.y - 50 || player.jumps < 2) {
-                player.vy = -10;
+                player.vy = -14;
                 player.jumps++;
             }
             break;
