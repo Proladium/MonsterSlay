@@ -172,10 +172,14 @@ var player = {
     // New player methods
     takeDamage: function() {
         this.health -= 10;
+        console.log('Player takes damage');
+        console.log('Player health: ' + this.health);
         if (this.health <= 0) {
-            this.die();
+            this.health = 0; // Ensure health doesn't go below 0
+            console.log('Player has died!');
+            gameOver = true; // Set gameOver to true
         }
-    },
+    },    
     die: function() {
         // Code to handle player death
         // For now, let's just log a message
@@ -212,18 +216,24 @@ var powerUpTypes = [
 // Function to check for collision detection
 function checkCollision(player, monster) {
     var collisionDetected = (
-        player.x < monster.x + monster.width &&
-        player.x + player.width > monster.x &&
-        player.y < monster.y + monster.height &&
-        player.y + player.height > monster.y
+        player.x < monster.x + 50 &&
+        player.x + 50 > monster.x &&
+        player.y < monster.y + 50 &&
+        player.y + 50 > monster.y
     );
 
     if (collisionDetected) {
+        console.log('Collision detected');
         player.takeDamage();
+    } else {
+        console.log('No collision detected');
+        console.log('Player position: (' + player.x + ', ' + player.y + ')');
+        console.log('Monster position: (' + monster.x + ', ' + monster.y + ')');
     }
 
     return collisionDetected;
 }
+
 
 // Function to create a new power-up
 function createPowerUp() {
@@ -418,6 +428,12 @@ function updateMonsters() {
             monster.y = platform.y - 50;
             monster.vy = 0;
         }
+
+        // Check for collision with player
+        if (checkCollision(player, monster)) {
+            console.log('Collision detected');
+            player.takeDamage();
+        }
     }
 }
 
@@ -587,6 +603,12 @@ function gameLoop() {
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Check if game is over
+    if (gameOver) {
+        console.log('Game Over');
+        return; // Stop the game loop
+    }
 
     // Update game state
     updatePlayer();
