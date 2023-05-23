@@ -383,6 +383,7 @@ function renderPlatform() {
 // Function to create a new monster
 function createMonster(type, x, y, health, speed, vy) {
     var damage = 30; // Set the damage each monster can inflict
+    var speed = 
     return {
         x: x,
         y: y,
