@@ -167,8 +167,22 @@ var player = {
         var nextWeaponIndex = (currentWeaponIndex + 1) % weapons.length;
         this.weapon = weapons[nextWeaponIndex];
         document.getElementById('weapon').textContent = "Current Weapon: " + this.weapon.name;
+    },
+    
+    // New player methods
+    takeDamage: function() {
+        this.health -= 10;
+        if (this.health <= 0) {
+            this.die();
+        }
+    },
+    die: function() {
+        // Code to handle player death
+        // For now, let's just log a message
+        console.log('Player has died!');
     }
 };
+
 
 
 
@@ -197,12 +211,18 @@ var powerUpTypes = [
 
 // Function to check for collision detection
 function checkCollision(player, monster) {
-    return (
+    var collisionDetected = (
         player.x < monster.x + monster.width &&
         player.x + player.width > monster.x &&
         player.y < monster.y + monster.height &&
         player.y + player.height > monster.y
     );
+
+    if (collisionDetected) {
+        player.takeDamage();
+    }
+
+    return collisionDetected;
 }
 
 // Function to create a new power-up
@@ -620,4 +640,3 @@ function gameLoop() {
 
 // Start the game loop
 gameLoop();
-
