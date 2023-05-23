@@ -170,8 +170,9 @@ var player = {
     },
     
     // New player methods
-    takeDamage: function() {
-        this.health -= 10;
+    takeDamage: function(damage) {
+        console.log('Damage recieved: ' + damage);
+        this.health -= damage; // Use the passed damage value
         console.log('Player takes damage');
         console.log('Player health: ' + this.health);
         if (this.health <= 0) {
@@ -372,7 +373,9 @@ function renderPlatform() {
 // Function to create a new monster
 function createMonster(type, x, y, health, speed, vy) {
     var damage = 10; // Set the damage each monster can inflict
-    return { x: x, y: y, health: health, damage: damage, speed: speed, type: type, vy: vy };
+    var monster = { x: x, y: y, health: health, damage: damage, speed: speed, type: type, vy: vy };
+    console.log('Created monster: ', monster); // Log the created monster
+    return monster;
 }
 
 // Function to create monster
@@ -432,7 +435,7 @@ function updateMonsters() {
         // Check for collision with player
         if (checkCollision(player, monster)) {
             console.log('Collision detected');
-            player.takeDamage();
+            player.takeDamage(monster.damage); // Pass the monster's damage
         }
     }
 }
