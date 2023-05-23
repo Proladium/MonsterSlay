@@ -22,49 +22,13 @@ var keys = {
 };
 // Define the waves
 let waves = [
-    { numMonsters: 1, speed: 1 },
-    // Level 1
-    { numMonsters: 1, speed: 1 },
-    // Level 2
-    { numMonsters: 2, speed: 1.5 },
-    // Level 3
-    { numMonsters: 3, speed: 2 },
-    // Level 4
-    { numMonsters: 4, speed: 2.5 },
-    // Level 5
-    { numMonsters: 1, speed: 6 },
-    // Level 6
-    { numMonsters: 6, speed: 1 },
-    // level 7
-    { numMonsters: 7, speed: 3.7 },
-    // level 8
-    { numMonsters: 8, speed: 3.9 },
-    // level 9
-    { numMonsters: 9, speed: 4.1 },
-    // level 10
-    { numMonsters: 20, speed: 1 },
-    // level 11
-    { numMonsters: 3, speed: 10 },
-    // level 12
-    { numMonsters: 1, speed: 6.5 },
-    // level 13
-    { numMonsters: 13, speed: 7 },
-    // level 14
-    { numMonsters: 14, speed: 7.5 },
-    // level 15
-    { numMonsters: 15, speed: 8 },
-    // level 16
-    { numMonsters: 40, speed: 1 },
-    // level 17
-    { numMonsters: 17, speed: 9 },
-    // Level 18
-    { numMonsters: 18, speed: 9.5 },
-    // Level 19
-    { numMonsters: 19, speed: 10 },
-    // level 20
-    { numMonsters: 20, speed: 13 },
+    { numMonsters: 1, speed: 1, damage: 10, reward: 100 }, // Level 1
+    { numMonsters: 1, speed: 1, damage: 10, reward: 100 }, // Level 2
+    { numMonsters: 2, speed: 1.5, damage: 15, reward: 200 }, // Level 3
+    { numMonsters: 3, speed: 2, damage: 20, reward: 300 },
     // ...add more waves as needed...
-  ];
+];
+
   let currentWave = 0;
   let monstersDefeated = 0;
 
@@ -383,7 +347,6 @@ function renderPlatform() {
 // Function to create a new monster
 function createMonster(type, x, y, health, speed, vy) {
     var damage = 30; // Set the damage each monster can inflict
-    var speed = 
     return {
         x: x,
         y: y,
@@ -399,6 +362,7 @@ function createMonster(type, x, y, health, speed, vy) {
 
 // Function to create monster
 function createMonsters() {
+    // Clear out any old monsters
     monsters = [];
   
     var wave = waves[Math.min(currentWave, waves.length - 1)];
@@ -407,9 +371,20 @@ function createMonsters() {
       var monsterHealth = 50 + currentWave * 10;
       var monsterSpeed = wave.speed;
       var monsterType = i % 2 === 0 ? 'walking' : 'flying'; // Alternate between walking and flying
-      monsters.push(createMonster(monsterType, canvas.width + i * 50, platform.y - 50, monsterHealth, 1, monsterSpeed, 0));
+      var monsterDamage = 10; // Set the damage for each monster
+      monsters.push({
+          type: monsterType,
+          x: canvas.width + i * 50,
+          y: platform.y - 50,
+          health: monsterHealth,
+          damage: monsterDamage,
+          speed: monsterSpeed,
+          vy: 0
+      });
     }
 }
+
+
 
 // Update monsters
 function updateMonsters() {
