@@ -176,6 +176,7 @@ var player = {
         this.health -= damage; // Use the passed damage value
         console.log('Player takes damage');
         console.log('Player health: ' + this.health);
+        healthDisplay.textContent = "Health: " + this.health;
         if (this.health <= 0) {
             this.health = 0; // Ensure health doesn't go below 0
             console.log('Player has died!');
@@ -218,16 +219,18 @@ var powerUpTypes = [
 // Function to check for collision detection
 function checkCollision(player, monster) {
     var collisionDetected = (
-        player.x < monster.x + 50 &&
-        player.x + 50 > monster.x &&
-        player.y < monster.y + 50 &&
-        player.y + 50 > monster.y
+        player.x < monster.x + monster.width &&
+        player.x + player.width > monster.x &&
+        player.y < monster.y + monster.height &&
+        player.y + player.height > monster.y
     );
+
+    console.log('Checking collision: ' + collisionDetected);
 
     if (collisionDetected) {
         console.log('Collision detected with monster: ', monster); // Log the monster involved in the collision
         console.log('Collision detected');
-        player.takeDamage();
+        player.takeDamage(monster.damage);
     } else {
         console.log('No collision detected');
         console.log('Player position: (' + player.x + ', ' + player.y + ')');
