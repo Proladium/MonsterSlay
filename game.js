@@ -602,13 +602,8 @@ function gameLoop() {
 
         // Check for collision with player
         if (checkCollision(player, monster)) {
-            // Collision detected, reduce player's health
-            player.health -= 10;
-            if (player.health < 0) {
-                player.health = 0;
-            }
-            // Update health display
-            healthDisplay.textContent = "Health: " + player.health;
+            // Collision detected, call the takeDamage method of the player
+            player.takeDamage();
         }
     }
 
