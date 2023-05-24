@@ -65,7 +65,7 @@ let waves = [
     { numMonsters: 20, speed: 13 },
     // ...add more waves as needed...
   ];
-  
+
   // Define the current wave
   let currentWave = 0; // Start at wave 0
   let monstersDefeated = 0; // Keep track of how many monsters have been defeated
@@ -89,7 +89,7 @@ var player = {
     weapon: weapons[0], // Start with the first weapon
     jump: 0,
     swordCooldown: false, // Flag to track whether player is in sword cooldown period
-    swordCooldownDuration: 300, // Duration of the sword attack cooldown in milliseconds
+    swordCooldownDuration: 250, // Duration of the sword attack cooldown in milliseconds
     bowCooldown: false, // Flag to track whether player is in bow cooldown period
     bowCooldownDuration: 100, // Duration of the bow attack cooldown in milliseconds
     lastSwordAttackTime: 0, // Timestamp of the last sword attack
